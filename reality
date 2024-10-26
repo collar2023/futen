@@ -86,7 +86,7 @@
                "maxTimeDiff": 60000,
                "privateKey": "cJSPfPvdaslzCWq6WvmclevYmLXvRmShELJglI902ms",
                "publicKey": "Av7u-2oWL-3Xqohyh6IxjgOAUaPrBHv_2ky0WC-UORs",
-               "serverNames": ["oracle.909199.xyz"],
+               "serverNames": ["oracle.110110.xyz"],
                "shortIds": ["", "db", "2d88", "4e5b15", "cad63892", "bafa4f5af2", "a03f06e8b13f", "d766a0375157a2", "3860b91b295a22bc"],
                "show": false,
                "xver": 0
@@ -207,7 +207,7 @@
       "fingerprint": "chrome",
       "privateKey": "cJSPfPvdaslzCWq6WvmclevYmLXvRmShELJglI902ms",
       "publicKey": "Av7u-2oWL-3Xqohyh6IxjgOAUaPrBHv_2ky0WC-UORs",
-      "serverNames": ["oracle.909199.xyz"]
+      "serverNames": ["oracle.110110.xyz"]
    }
    ```
    - **位置**：`streamSettings` -> `realitySettings`
