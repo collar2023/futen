@@ -1,0 +1,159 @@
+{
+  "api": {
+    "services": [
+      "HandlerService",
+      "LoggerService",
+      "StatsService"
+    ],
+    "tag": "api"
+  },
+  "dns": null,
+  "fakeDns": null,
+  "inbounds": [
+    {
+      "listen": "127.0.0.1",
+      "port": 62789,
+      "protocol": "dokodemo-door",
+      "settings": {
+        "address": "127.0.0.1"
+      },
+      "sniffing": null,
+      "streamSettings": null,
+      "tag": "api"
+    },
+    {
+      "listen": null,
+      "port": 59383,
+      "protocol": "vless",
+      "settings": {
+        "clients": [
+          {
+            "flow": "xtls-rprx-vision",
+            "id": "dc84200e-cfa8-4830-e300-77d41b80d2f6"
+          }
+        ],
+        "decryption": "none",
+        "fallbacks": []
+      },
+      "sniffing": {
+        "destOverride": [
+          "http",
+          "tls",
+          "quic"
+        ],
+        "enabled": true
+      },
+      "streamSettings": {
+        "network": "tcp",
+        "realitySettings": {
+          "dest": "www.amazon.com:443",
+          "fingerprint": "chrome",
+          "maxClientVer": "",
+          "maxTimeDiff": 60000,
+          "minClientVer": "",
+          "privateKey": "cJSPfPvdaslzCWq6WvmclevYmLXvRmShELJglI902ms",
+          "publicKey": "Av7u-2oWL-3Xqohyh6IxjgOAUaPrBHv_2ky0WC-UORs",
+          "serverNames": [
+            "oracle.909199.xyz"
+          ],
+          "shortIds": [
+            "",
+            "db",
+            "2d88",
+            "4e5b15",
+            "cad63892",
+            "bafa4f5af2",
+            "a03f06e8b13f",
+            "d766a0375157a2",
+            "3860b91b295a22bc"
+          ],
+          "show": false,
+          "xver": 0
+        },
+        "security": "reality",
+        "tcpSettings": {
+          "header": {
+            "type": "none"
+          }
+        }
+      },
+      "tag": "inbound-59383"
+    }
+  ],
+  "log": {
+    "access": "none",
+    "error": "none",
+    "loglevel": "info"
+  },
+  "outbounds": [
+    {
+      "protocol": "freedom",
+      "tag": "direct"
+    },
+    {
+      "protocol": "blackhole",
+      "tag": "blocked"
+    }
+  ],
+  "policy": {
+    "levels": {
+      "0": {
+        "connIdle": 120,
+        "downlinkOnly": 1,
+        "handshake": 2,
+        "uplinkOnly": 1
+      }
+    },
+    "system": {
+      "statsInboundDownlink": true,
+      "statsInboundUplink": true,
+      "statsOutboundDownlink": true,
+      "statsOutboundUplink": true
+    }
+  },
+  "reverse": null,
+  "routing": {
+    "domainStrategy": "IPIfNonMatch",
+    "rules": [
+      {
+        "inboundTag": [
+          "api"
+        ],
+        "outboundTag": "api",
+        "type": "field"
+      },
+      {
+        "domain": [
+          "www.gstatic.com"
+        ],
+        "outboundTag": "direct",
+        "type": "field"
+      },
+      {
+        "domain": [
+          "geosite:category-ads-all",
+          "geosite:cn",
+          "geosite:geolocation-cn"
+        ],
+        "outboundTag": "blocked",
+        "type": "field"
+      },
+      {
+        "ip": [
+          "geoip:cn"
+        ],
+        "outboundTag": "blocked",
+        "type": "field"
+      },
+      {
+        "outboundTag": "blocked",
+        "protocol": [
+          "bittorrent"
+        ],
+        "type": "field"
+      }
+    ]
+  },
+  "stats": {},
+  "transport": null
+}
