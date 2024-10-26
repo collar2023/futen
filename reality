@@ -1,0 +1,190 @@
+下面逐行更详细地讲解每个部分的配置，这样即使你是新手也能更好地理解。
+
+---
+
+### 文件总览
+这个文件是一个JSON格式的配置文件，用于设置Xray UI代理服务。配置文件主要分为几个部分，包括API设置、入站和出站流量设置、日志设置、策略、路由等等。每个部分控制代理服务的不同方面。
+
+---
+
+### 1. **API设置**
+   ```json
+   "api": {
+      "services": [
+         "HandlerService",
+         "LoggerService",
+         "StatsService"
+      ],
+      "tag": "api"
+   }
+   ```
+   - **`services`**：定义了API提供的功能服务。这个例子里有三项服务：
+     - **`HandlerService`**：用于处理各种请求和事件。
+     - **`LoggerService`**：记录日志信息。
+     - **`StatsService`**：提供统计数据服务，如流量监控等。
+   - **`tag`**：标记为`"api"`。这个标签可以在其他部分引用，用来标识这部分API服务。
+
+---
+
+### 2. **DNS和假DNS设置**
+   ```json
+   "dns": null,
+   "fakeDns": null
+   ```
+   - **`dns`**：这里为空，表示没有配置自定义DNS服务器。
+   - **`fakeDns`**：也为空，表示没有使用假DNS。假DNS常用于一些特殊情况下的流量伪装和绕过，但在这里并没有配置。
+
+---
+
+### 3. **入站流量设置（`inbounds`）**
+   这里的入站流量配置了两个不同的协议：
+   
+   - **入站一：API流量**
+      ```json
+      {
+         "listen": "127.0.0.1",
+         "port": 62789,
+         "protocol": "dokodemo-door",
+         "settings": {
+            "address": "127.0.0.1"
+         },
+         "sniffing": null,
+         "streamSettings": null,
+         "tag": "api"
+      }
+      ```
+      - **`listen`**：设置监听的地址为本地`127.0.0.1`，即只接受本机的请求。
+      - **`port`**：端口设置为`62789`，用于API服务的通信。
+      - **`protocol`**：使用了`dokodemo-door`协议，这是一种透明代理协议，允许Xray监听并处理从其他软件发送过来的流量。
+      - **`settings`**：定义监听的目标地址（这里是本机地址`127.0.0.1`）。
+      - **`tag`**：标记为`"api"`，用于在路由中识别该流量。
+
+   - **入站二：VLESS协议**
+      ```json
+      {
+         "port": 59383,
+         "protocol": "vless",
+         "settings": {
+            "clients": [
+               {
+                  "flow": "xtls-rprx-vision",
+                  "id": "dc84200e-cfa8-4830-e300-77d41b80d2f6"
+               }
+            ],
+            "decryption": "none",
+            "fallbacks": []
+         },
+         "sniffing": {
+            "destOverride": ["http", "tls", "quic"],
+            "enabled": true
+         },
+         "streamSettings": {
+            "network": "tcp",
+            "realitySettings": {
+               "dest": "www.amazon.com:443",
+               "fingerprint": "chrome",
+               "maxTimeDiff": 60000,
+               "privateKey": "cJSPfPvdaslzCWq6WvmclevYmLXvRmShELJglI902ms",
+               "publicKey": "Av7u-2oWL-3Xqohyh6IxjgOAUaPrBHv_2ky0WC-UORs",
+               "serverNames": ["oracle.909199.xyz"],
+               "shortIds": ["", "db", "2d88", "4e5b15", "cad63892", "bafa4f5af2", "a03f06e8b13f", "d766a0375157a2", "3860b91b295a22bc"],
+               "show": false,
+               "xver": 0
+            },
+            "security": "reality",
+            "tcpSettings": {
+               "header": {
+                  "type": "none"
+               }
+            }
+         },
+         "tag": "inbound-59383"
+      }
+      ```
+      - **`port`**：端口为`59383`，用于VLESS协议连接。
+      - **`protocol`**：使用`vless`协议，这是一种轻量且高性能的代理协议。
+      - **`settings`**：
+         - **`clients`**：定义允许连接的客户端。`id`表示客户端的唯一身份标识，这里是一串UUID。
+         - **`flow`**：配置流量使用`xtls-rprx-vision`。
+         - **`decryption`**：解密设置为`none`，表示不加密。
+      - **`sniffing`**：启用流量嗅探，识别HTTP、TLS、QUIC流量协议类型。
+      - **`streamSettings`**：
+         - **`network`**：设置网络类型为TCP。
+         - **`realitySettings`**：配置了Reality协议，伪装为浏览器流量。 
+            - **`dest`**：目标地址为`www.amazon.com:443`。
+            - **`fingerprint`**：设置为`chrome`伪装。
+            - **`privateKey`**和**`publicKey`**：配置了加密密钥。
+      - **`tag`**：标记为`inbound-59383`，便于在其他部分引用该入站规则。
+
+---
+
+### 4. **日志设置**
+   ```json
+   "log": {
+      "access": "none",
+      "error": "none",
+      "loglevel": "info"
+   }
+   ```
+   - **`access`**：设置访问日志为`none`，即不记录访问日志。
+   - **`error`**：错误日志也设置为`none`，不记录错误日志。
+   - **`loglevel`**：日志级别为`info`，这意味着只记录重要信息，而忽略更详细的调试信息。
+
+---
+
+### 5. **出站流量设置（outbounds）**
+   - **自由协议出站**
+      ```json
+      {
+         "protocol": "freedom",
+         "tag": "direct"
+      }
+      ```
+      - 使用了`freedom`协议，允许自由访问外部网络，不受限制。
+      - **`tag`**：标记为`direct`，用于识别此类流量。
+
+   - **黑洞协议出站**
+      ```json
+      {
+         "protocol": "blackhole",
+         "tag": "blocked"
+      }
+      ```
+      - 使用`blackhole`协议将流量封锁掉。
+      - **`tag`**：标记为`blocked`，用于识别被阻止的流量。
+
+---
+
+### 6. **策略设置**
+   ```json
+   "policy": {
+      "levels": {
+         "0": {
+            "connIdle": 120,
+            "downlinkOnly": 1,
+            "handshake": 2,
+            "uplinkOnly": 1
+         }
+      },
+      "system": {
+         "statsInboundDownlink": true,
+         "statsInboundUplink": true,
+         "statsOutboundDownlink": true,
+         "statsOutboundUplink": true
+      }
+   }
+   ```
+   - **`connIdle`**：设置连接的空闲时间为120秒，超过此时间无活动会自动断开连接。
+   - **`system`**：启用了系统统计，记录入站和出站的上下行流量信息。
+
+---
+
+### 7. **路由设置（routing）**
+   - **domainStrategy**：设置为`IPIfNonMatch`，当域名不匹配时会使用IP进行路由。
+   - **rules**：
+      - 将API相关流量标记为`api`。
+      - 直接放行`www.gstatic.com`的流量。
+      - 屏蔽广告、国内IP以及BT协议流量【6†source】。
+
+---
+
